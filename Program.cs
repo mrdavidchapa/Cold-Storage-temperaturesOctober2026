@@ -7,11 +7,8 @@ class Program
     static void Main(string[] args)
     {
 
-        
-        
-
-        Console.WriteLine("Hello, World!");
-        ReadTemperatureFile();
+         ReadTemperatureFile();
+        //ReadDocumentsFolder();
         
         // Dispose of the StreamWriter to release resources
         //swDestinationFile.Dispose();
@@ -34,12 +31,25 @@ class Program
         Console.WriteLine(baseDir);
         
         //string strFilePath = Path.Combine(baseDir, "NEW_ZeroHistory_2KLPG007_2026.txt");
-        string strColdStorageFilePathAndName = "C:\\Weather\\MONTH 2026-02-FEB.csv";
+        
+                string strDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        
+        //string strColdStorageFilePathAndName = "C:\\Weather\\MONTH 2026-02-FEB.csv";
+        
+               string strColdStorageFilePathAndName = strDocumentsPath + "\\MONTH 2026-02-FEB.csv";       
+        Console.WriteLine( strColdStorageFilePathAndName);
+        //Console.ReadLine();
 
+                if (!File.Exists(strColdStorageFilePathAndName))
+                {
+                    Console.WriteLine($"File not found: {strColdStorageFilePathAndName}");
+                }
+
+ 
         
 
         using (StreamReader swSourceFile = File.OpenText(strColdStorageFilePathAndName))
-        using (StreamWriter swDestinationFile = new StreamWriter("C:\\Weather\\NEW_VS2.txt", true))
+        //using (StreamWriter swDestinationFile = new StreamWriter("C:\\Weather\\NEW_VS2.txt", true))
         {
             string strHeadingLine ="";
             string strLine = "";
@@ -53,27 +63,48 @@ class Program
 
             string strHeadings;
 
-            Console.WriteLine("Heading" + strHeadingLine);
+            Console.WriteLine($"\nHeading: {strHeadingLine}");
 
             while ((strLine = swSourceFile.ReadLine()) != null)
             {
+                string[] fields = strLine.Split(',');
+                int intTotalFieldsLength = fields.Length;
+                intCount++;
+                int intFieldCount = 0;
                 
-                //string[] strData = strLine.Split(',');
+                Console.WriteLine($"\nRecord: {intCount} - {strLine}\n");
+
+                foreach (string field in fields)
+                {
+                    intFieldCount++;
+                    Console.WriteLine($"# {intFieldCount} Field: {field}");
+                }
+                Console.WriteLine("\n End of record - Press ENTER to continue...");
+                Console.ReadLine();
 
                  intRecordCount++;
 
-                Console.WriteLine(strLine);
+                Console.WriteLine($"{intFieldCount} {strLine}");
+
+                
                 
                 if (intRecordCount == 1) 
                 {
+                    Console.WriteLine(strHeadingLine);
+                    /* 2026-09-29 disabled write to new file
                     swDestinationFile.WriteLine(strHeadingLine);
+                    */
                 }
                 else
                 {
+                    Console.WriteLine(strLine);
+                    //Environment.Exit(0);
+                    /* 2026-09-29 disabled write to new file
                     swDestinationFile.WriteLine(strLine);
+                    */
                 }
                 
-
+                
                 //swDestinationFile.WriteLine(strLine);
 
                 //WriteDestinationFile(strLine,strHeadingLine);
@@ -93,6 +124,20 @@ class Program
             
         //swDestinationFile.WriteLine(strLine);
         // Implementation for writing to destination file
+    }
+
+    static void ReadDocumentsFolder()
+    {
+        // 1. Get the path to the Documents folder
+        string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        Console.WriteLine($"Documents Path: {documentsPath}");
+
+        // 2. Safely create a path to a specific file or folder inside Documents
+        string filePath = Path.Combine(documentsPath, "MyFolder", "example.txt");
+        Console.WriteLine($"Full File Path: {filePath}");
+        Console.WriteLine("\nPress ENTER to exit...");
+
+        Console.ReadLine();
     }
 
 }
