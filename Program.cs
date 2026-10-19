@@ -37,7 +37,7 @@ class Program
         //string strColdStorageFilePathAndName = "C:\\Weather\\MONTH 2026-02-FEB.csv";
         
                string strColdStorageFilePathAndName = strDocumentsPath + "\\MONTH 2026-02-FEB.csv";       
-        Console.WriteLine( strColdStorageFilePathAndName);
+        Console.WriteLine($"\nStart of processing\n\nSource file name: {strColdStorageFilePathAndName}");
         //Console.ReadLine();
 
                 if (!File.Exists(strColdStorageFilePathAndName))
@@ -79,12 +79,15 @@ class Program
                     intFieldCount++;
                     Console.WriteLine($"# {intFieldCount} Field: {field}");
                 }
+
+                WriteDatatoMonthFile(strLine);
+
                 Console.WriteLine("\n End of record - Press ENTER to continue...");
                 Console.ReadLine();
 
                  intRecordCount++;
 
-                Console.WriteLine($"{intFieldCount} {strLine}");
+                //Console.WriteLine($"{intFieldCount} {strLine}");
 
                 
                 
@@ -118,6 +121,7 @@ class Program
         }
     }
 
+
     public void WriteDestinationFile(string strLine, string strHeadings)
     {
 
@@ -125,6 +129,93 @@ class Program
         //swDestinationFile.WriteLine(strLine);
         // Implementation for writing to destination file
     }
+
+    
+    static void WriteDatatoMonthFile(string strEntireRecord)
+    {
+        // Implementation for writing data to month file
+
+        
+        int intSlashCount = 0; // count the number of slashes in the DateTime string
+        string strMonth = ""; // save Month digit(s) from DateTime string
+        string strYear = ""; // save 4 digit Year from DateTime string
+        int intMonth = 0;
+        //string strFullFlleName = "";
+
+        string[] fields = strEntireRecord.Split(',');
+
+
+        string strDateTime=fields[0];
+        string strTemperature=fields[1];
+        string strAlarm=fields[2];
+        string strComment="";
+
+
+        // From strDateTime mm/dd/yyyy or (m/d/yyyy)
+        // Parse  4 digit year 
+        // and Month number 1-12 
+        for (int i = 0; i < strDateTime.Length; i++)
+        {
+                        
+            if (intSlashCount == 2)
+            {
+                strYear = strDateTime.Substring(i, 4);
+                intMonth = int.Parse(strMonth);
+                break;
+            }
+
+            if(intSlashCount== 1)
+            {
+                if (strDateTime.Substring(i,1) == "/")
+                {
+                    intSlashCount++;
+                }
+            }
+
+            if (intSlashCount == 0)
+            {
+                if (strDateTime.Substring(i,1) == "/") 
+                {
+                    intSlashCount++;
+                }
+                else
+                {
+                    strMonth = strMonth + strDateTime.Substring(i,1);
+                }
+            }
+        }
+
+        string[] strMonthNames = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+        string strFullFlleName = $"C:\\Weather\\XNEW MONTH {strYear}-{intMonth:D2}-{strMonthNames[intMonth - 1]}.txt";
+        string strLinetoWrite;
+
+        if (File.Exists(strFullFlleName))
+        {
+            Console.WriteLine("File Exists - Write data");
+            strLinetoWrite = "Hello, weather data written";
+        }
+        else
+        {
+            Console.WriteLine("FILE DOES NOT EXIST = Write first heading line");
+            strLinetoWrite = "Time,Chan 1 - Deg F,Alm 1";
+        }
+
+        using (StreamWriter filewrite = new StreamWriter(strFullFlleName, true))
+        {
+             filewrite.WriteLine(strLinetoWrite);
+        }
+
+
+       // If Dir(strFullFlleName) = "" Then  ' Write headings to first line
+/*
+            Open strFullFlleName For Append As #2
+            Print #2, strHeadingLine
+            Close #2
+        End If
+*/
+    }
+
 
     static void ReadDocumentsFolder()
     {
